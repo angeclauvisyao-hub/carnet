@@ -1,0 +1,16 @@
+{
+  "name": "Clauvi's Carnet",
+  "short_name": "Carnet",
+  "description": "Carnet personnel : dépenses, créances, dettes, affaires et position nette. Les données restent dans l'appareil.",
+  "lang": "fr",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f6f7",
+  "theme_color": "#0e6b61",
+  "icons": [
+    {"src": "icones/icone-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icones/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}
+  ]
+}

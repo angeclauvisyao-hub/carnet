@@ -1,0 +1,73 @@
+{
+ "_": "Exemple de données de départ, montants fictifs. Copie-le en prive/depart.json et mets tes vrais chiffres.",
+ "tiers": [
+  {
+   "id": 1,
+   "nom": "Un proche",
+   "genre": "Famille",
+   "tel": "",
+   "note": ""
+  }
+ ],
+ "recurrents": [
+  {
+   "id": 1,
+   "libelle": "Salaire",
+   "sens": "entree",
+   "montant": 100000,
+   "cat": "Salaire",
+   "tiers": null,
+   "compte": 3,
+   "rythme": {
+    "type": "mensuel",
+    "jour": 1
+   },
+   "prochaine": "auto"
+  },
+  {
+   "id": 2,
+   "libelle": "Loyer",
+   "sens": "sortie",
+   "montant": 50000,
+   "cat": "Maison",
+   "tiers": null,
+   "compte": 3,
+   "rythme": {
+    "type": "mensuel",
+    "jour": 5
+   },
+   "prochaine": "auto"
+  },
+  {
+   "id": 3,
+   "libelle": "Aide à un proche",
+   "sens": "sortie",
+   "montant": 10000,
+   "facultatif": true,
+   "cat": "Aides",
+   "tiers": 1,
+   "compte": 2,
+   "rythme": {
+    "type": "bimensuel",
+    "jours": [
+     5,
+     20
+    ]
+   },
+   "prochaine": "auto"
+  }
+ ],
+ "enveloppes": [
+  {
+   "id": 1,
+   "libelle": "Dépenses de la maison",
+   "cats": [
+    "Nourriture",
+    "Maison"
+   ],
+   "montant": 30000,
+   "montantsParMois": {},
+   "note": ""
+  }
+ ]
+}

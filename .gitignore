@@ -1,0 +1,15 @@
+.DS_Store
+# Données personnelles : ne quittent jamais la machine.
+/prive/
+# Version à fichier unique : elle embarque les données privées, donc jamais versionnée.
+/artefact/
+# Sauvegardes chiffrées
+*.carnet
+carnet-20*.json
+/sauvegardes/
+
+# Copie du fichier de départ posée à la racine : données personnelles, jamais versionnées.
+/depart.json
+depart*.json
+!depart-exemple.json
+!tests/depart-essai.json

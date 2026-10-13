@@ -1,0 +1,166 @@
+{
+ "_": "Jeu d'essai des tests : montants et noms fictifs, même structure que de vraies données.",
+ "tiers": [
+  {
+   "id": 1,
+   "nom": "Un parent",
+   "genre": "Famille",
+   "tel": "",
+   "note": ""
+  },
+  {
+   "id": 2,
+   "nom": "Un enfant",
+   "genre": "Famille",
+   "tel": "",
+   "note": ""
+  }
+ ],
+ "recurrents": [
+  {
+   "id": 1,
+   "libelle": "Salaire",
+   "sens": "entree",
+   "montant": 200000,
+   "cat": "Salaire",
+   "tiers": null,
+   "compte": 3,
+   "rythme": {
+    "type": "mensuel",
+    "jour": 10
+   },
+   "prochaine": "auto"
+  },
+  {
+   "id": 2,
+   "libelle": "Loyer",
+   "sens": "sortie",
+   "montant": 80000,
+   "cat": "Maison",
+   "tiers": null,
+   "compte": 3,
+   "rythme": {
+    "type": "mensuel",
+    "jour": 5
+   },
+   "prochaine": "auto"
+  },
+  {
+   "id": 3,
+   "libelle": "Électricité",
+   "sens": "sortie",
+   "montant": 20000,
+   "cat": "Maison",
+   "tiers": null,
+   "compte": 3,
+   "rythme": {
+    "type": "mensuel",
+    "jour": 10
+   },
+   "prochaine": "auto"
+  },
+  {
+   "id": 4,
+   "libelle": "Eau",
+   "sens": "sortie",
+   "montant": 6000,
+   "cat": "Maison",
+   "tiers": null,
+   "compte": 3,
+   "rythme": {
+    "type": "trimestriel",
+    "jour": 15
+   },
+   "prochaine": null
+  },
+  {
+   "id": 5,
+   "libelle": "Internet",
+   "sens": "sortie",
+   "montant": 10000,
+   "cat": "Télécom",
+   "tiers": null,
+   "compte": 3,
+   "rythme": {
+    "type": "mensuel",
+    "jour": 15
+   },
+   "prochaine": "auto"
+  },
+  {
+   "id": 6,
+   "libelle": "Scolarité",
+   "sens": "sortie",
+   "montant": 30000,
+   "cat": "Scolarité",
+   "tiers": null,
+   "compte": 3,
+   "rythme": {
+    "type": "mois",
+    "mois": [
+     9,
+     11,
+     12
+    ],
+    "jour": 15
+   },
+   "prochaine": "auto"
+  },
+  {
+   "id": 7,
+   "libelle": "Aide à un parent",
+   "sens": "sortie",
+   "montant": 20000,
+   "facultatif": true,
+   "cat": "Aides",
+   "tiers": 1,
+   "compte": 2,
+   "rythme": {
+    "type": "bimensuel",
+    "jours": [
+     5,
+     20
+    ]
+   },
+   "prochaine": "auto"
+  },
+  {
+   "id": 8,
+   "libelle": "Aide à un enfant",
+   "sens": "sortie",
+   "montant": 12000,
+   "facultatif": true,
+   "cat": "Aides",
+   "tiers": 2,
+   "compte": 2,
+   "rythme": {
+    "type": "mensuel",
+    "jour": 5
+   },
+   "prochaine": "auto"
+  }
+ ],
+ "enveloppes": [
+  {
+   "id": 1,
+   "libelle": "Dépenses de la maison",
+   "cats": [
+    "Nourriture",
+    "Maison"
+   ],
+   "montant": 60000,
+   "montantsParMois": {},
+   "note": ""
+  },
+  {
+   "id": 2,
+   "libelle": "Caisse d'aides",
+   "cats": [
+    "Aides"
+   ],
+   "montant": 52000,
+   "montantsParMois": {},
+   "note": ""
+  }
+ ]
+}

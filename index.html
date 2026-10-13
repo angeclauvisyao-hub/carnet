@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e6b61">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Carnet">
+<meta name="robots" content="noindex,nofollow">
+<!-- La page ne parle qu'à elle-même et à GitHub (la synchronisation). Si du
+     code étranger s'y exécutait un jour, il ne pourrait rien envoyer ailleurs :
+     ni requête, ni image, ni formulaire vers un autre site. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://api.github.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Clauvi's Carnet</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icones/icone-192.png">
+<link rel="icon" href="icones/icone-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- La barre reste cachée jusqu'à ce que les données soient lues : on ne
+     montre pas une coquille vide, et le verrou passe avant tout le reste. -->
+<header class="haut" id="barre-haut" hidden>
+  <b>Clauvi's Carnet</b>
+  <span class="jour" id="jour"></span>
+  <button class="pastille-synchro" id="etat-synchro" hidden onclick="Carnet.aller('reglages')"></button>
+  <button class="lien" onclick="Carnet.aller('reglages')" aria-label="Réglages">⚙</button>
+</header>
+<main class="ecran" id="vue"></main>
+<button class="plus-rond" onclick="Formulaires.plus()" aria-label="Ajouter">+</button>
+<nav class="onglets" id="onglets" aria-label="Écrans"></nav>
+<div id="couche"></div>
+<div id="verrou" hidden></div>
+<div id="zone-toast" aria-live="polite"></div>
+<!-- Données de départ privées : présentes sur la machine du propriétaire, absentes de tout
+     hébergement (le dossier prive/ est ignoré par git). Sans elles, l'app démarre vide. -->
+<script src="prive/depart.js" onerror="this.remove()"></script>
+<script src="calculs.js"></script>
+<script src="app.js"></script>
+<script src="vues.js"></script>
+<script src="formulaires.js"></script>
+<script src="synchro.js"></script>
+<script src="verrou.js"></script>
+<script>Carnet.demarrer();</script>
+</body>
+</html>

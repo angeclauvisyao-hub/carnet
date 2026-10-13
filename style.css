@@ -1,0 +1,385 @@
+/* Clauvi's Carnet — un écran de téléphone, tenu au pouce.
+   Palette sobre, montants en police à largeur fixe comme sur un registre,
+   et deux couleurs qui veulent dire quelque chose : vert on me doit,
+   terre cuite je dois. Le reste est gris. */
+:root{
+  --fond:#f4f6f7; --carte:#ffffff; --carte2:#eef2f3;
+  --encre:#13191e; --encre-douce:#5b6a75; --trait:#dde4e8;
+  --accent:#0e6b61; --recevoir:#0d6b4e; --payer:#a23f2a; --retard:#8f5500;
+  /* Polices du système uniquement : rien ne part vers un serveur de polices,
+     et l'app s'affiche pareil hors ligne. */
+  --police-titre:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --police-texte:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --police-chiffre:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --fond:#10151a; --carte:#171e24; --carte2:#1e272e;
+  --encre:#e9eff2; --encre-douce:#94a3ae; --trait:#26313a;
+  --accent:#47b5a6; --recevoir:#4dbe8d; --payer:#e28a71; --retard:#d7a23b;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --fond:#10151a; --carte:#171e24; --carte2:#1e272e;
+  --encre:#e9eff2; --encre-douce:#94a3ae; --trait:#26313a;
+  --accent:#47b5a6; --recevoir:#4dbe8d; --payer:#e28a71; --retard:#d7a23b;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+/* touch-action : un double toucher ne zoome plus la page (le pincement, lui,
+   reste possible pour qui veut agrandir). */
+body{background:var(--fond);color:var(--encre);font-family:var(--police-texte);
+  font-size:16px;line-height:1.45;margin:0;-webkit-text-size-adjust:100%;touch-action:manipulation}
+img{max-width:100%}
+[hidden]{display:none!important}
+.ecran{max-width:560px;margin:0 auto;padding:0 16px 112px}
+h1,h2,h3{font-family:var(--police-titre);text-wrap:balance;margin:0}
+.chiffre{font-family:var(--police-chiffre);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+
+.haut{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--fond);
+  border-bottom:1px solid var(--trait);padding:10px 16px 8px;display:flex;align-items:baseline;gap:10px}
+.haut b{font-family:var(--police-titre);font-size:17px;font-weight:700;letter-spacing:-.01em}
+.haut .jour{color:var(--encre-douce);font-size:13px;margin-left:auto}
+/* La pastille de synchronisation : une couleur, un coup d'œil. Verte à jour,
+   ambre quand des saisies attendent, rouge quand quelque chose bloque. */
+.pastille-synchro{width:12px;height:12px;border-radius:50%;border:0;padding:0;cursor:pointer;
+  background:var(--recevoir);align-self:center}
+.pastille-synchro[data-etat="attente"],.pastille-synchro[data-etat="encours"],
+.pastille-synchro[data-etat="horsligne"]{background:var(--retard)}
+.pastille-synchro[data-etat="erreur"],.pastille-synchro[data-etat="choix"]{background:var(--payer)}
+.note-bas{background:var(--carte2);color:var(--encre-douce);font-size:12px;padding:6px 10px;
+  border-radius:6px;margin:12px 0 0;border-left:3px solid var(--accent)}
+
+.somme{background:var(--carte);border:1px solid var(--trait);border-radius:12px;padding:14px 16px;margin-top:12px}
+.somme .etiquette{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--encre-douce);font-weight:600}
+.somme .gros{font-family:var(--police-chiffre);font-variant-numeric:tabular-nums;
+  font-size:30px;font-weight:600;letter-spacing:-.03em;display:block;margin-top:2px}
+.somme .detail{font-size:13px;color:var(--encre-douce)}
+.somme .reste{display:block;margin-top:8px;padding-top:8px;border-top:1px solid var(--trait);font-size:14px}
+.somme .reste b{font-family:var(--police-chiffre);font-variant-numeric:tabular-nums}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+/* Deux cartes côte à côte même sur un iPhone de 375 px : le chiffre rétrécit
+   avec l'écran plutôt que de passer sous l'autre ou d'être coupé. */
+@media (max-width:330px){.duo{grid-template-columns:1fr}}
+.duo .somme{margin:0;padding:12px;min-width:0}
+.duo .gros{font-size:clamp(15px,4.6vw,22px);white-space:nowrap}
+.vers-moi .gros{color:var(--recevoir)}
+.de-moi .gros{color:var(--payer)}
+.lien{background:none;border:0;padding:0;font:inherit;font-weight:600;color:var(--accent);
+  text-decoration:underline;cursor:pointer}
+
+h2.titre-bloc{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--encre-douce);
+  font-weight:600;margin:22px 0 8px;display:flex;align-items:center;gap:8px}
+h2.titre-bloc .pastille{font-family:var(--police-chiffre);font-size:12px;background:var(--carte2);
+  border-radius:20px;padding:1px 8px;letter-spacing:0}
+h2.titre-bloc.alerte{color:var(--retard)}
+h2.titre-bloc.alerte .pastille{background:var(--retard);color:var(--carte)}
+h2.titre-bloc .ajout{margin-left:auto;letter-spacing:0;text-transform:none;font-size:13px}
+h2.titre-bloc .total{margin-left:auto;font-family:var(--police-chiffre);font-variant-numeric:tabular-nums;
+  font-size:16px;letter-spacing:-.02em;text-transform:none;color:var(--encre)}
+h2.titre-bloc .total.plus{color:var(--recevoir)}
+h2.titre-bloc .total.moins{color:var(--payer)}
+
+.liste{display:flex;flex-direction:column;gap:1px;background:var(--trait);
+  border:1px solid var(--trait);border-radius:12px;overflow:hidden}
+.ligne{background:var(--carte);border:0;width:100%;text-align:left;font:inherit;color:inherit;
+  padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer}
+.ligne.fixe-ligne{cursor:default}
+/* Une ligne à deux gestes : le nom ouvre le réglage, le bouton agit. */
+.ligne.ligne-action{cursor:default;padding-right:10px}
+.ligne.ligne-action:hover{background:var(--carte)}
+.ligne .zone{flex:1;min-width:0;display:flex;align-items:center;background:none;border:0;padding:0;
+  font:inherit;color:inherit;text-align:left;cursor:pointer}
+.ligne .zone:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.ligne .cote{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex:none}
+.ligne .faire{font:inherit;font-size:13px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;
+  border:1px solid var(--accent);background:var(--accent);color:#fff;min-height:34px}
+.ligne .faire.retard{background:var(--retard);border-color:var(--retard)}
+/* Réglée pour le mois : du vert, et plus de montant rouge. */
+.ligne .reglee{font:inherit;font-size:13px;font-weight:600;padding:7px 10px;border-radius:8px;cursor:pointer;
+  border:1px solid var(--recevoir);background:none;color:var(--recevoir);min-height:34px;white-space:nowrap}
+.ligne .reglee:focus-visible{outline:2px solid var(--recevoir);outline-offset:2px}
+.ligne.est-reglee .nom{color:var(--encre-douce)}
+.ligne .faire:focus-visible{outline:2px solid var(--encre);outline-offset:2px}
+.ligne:hover{background:var(--carte2)}
+.ligne:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.ligne .nom{font-weight:600;display:block}
+.ligne .sous{font-size:13px;color:var(--encre-douce)}
+.ligne .corps{min-width:0;flex:1}
+/* Un nom ou une précision peut prendre deux lignes plutôt que d'être coupé :
+   « Kou… » ne dit pas à qui on a prêté. Au-delà de deux lignes, on coupe. */
+.ligne .corps .nom,.ligne .corps .sous{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  overflow:hidden;overflow-wrap:anywhere}
+.ligne .corps .nom{line-height:1.25}
+.montant{font-family:var(--police-chiffre);font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.montant.plus{color:var(--recevoir)}
+.montant.moins{color:var(--payer)}
+.montant.neutre{color:var(--encre-douce);font-weight:500}
+.bande{width:3px;align-self:stretch;border-radius:3px;background:var(--trait);flex:none}
+.bande.retard{background:var(--retard)}
+.bande.sans-date{background:var(--payer)}
+.bande.charge{background:var(--accent)}
+.bande.entree{background:var(--recevoir)}
+.vide{background:var(--carte);border:1px dashed var(--trait);border-radius:12px;padding:16px;
+  text-align:center;color:var(--encre-douce);font-size:14px}
+
+.jeton{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;
+  padding:2px 7px;border-radius:5px;background:var(--carte2);color:var(--encre-douce);white-space:nowrap}
+.jeton.retard{background:var(--retard);color:#fff}
+.jeton.ok{background:var(--recevoir);color:#fff}
+.jeton.part{background:var(--accent);color:#fff}
+
+.onglets{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--carte);
+  border-top:1px solid var(--trait);display:flex;padding:6px 0 calc(6px + env(safe-area-inset-bottom,0px))}
+.onglets button{flex:1;background:none;border:0;font:inherit;color:var(--encre-douce);
+  font-size:10px;padding:4px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+.onglets button b{font-size:17px;line-height:1;font-weight:500}
+.onglets button[aria-current="page"]{color:var(--accent);font-weight:600}
+.plus-rond{position:fixed;right:16px;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:7;
+  width:56px;height:56px;border-radius:50%;border:0;background:var(--accent);color:#fff;
+  font-size:30px;line-height:1;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.22)}
+
+.retour{background:none;border:0;font:inherit;color:var(--accent);padding:12px 0 0;cursor:pointer;font-weight:600}
+.entete h1{font-size:24px;letter-spacing:-.02em;margin-top:6px}
+.entete .meta{color:var(--encre-douce);font-size:13px;margin-top:2px}
+.solde{margin-top:14px;background:var(--carte);border:1px solid var(--trait);border-radius:12px;padding:16px}
+.solde .phrase{font-size:14px;color:var(--encre-douce)}
+.solde .gros{font-family:var(--police-chiffre);font-variant-numeric:tabular-nums;
+  font-size:34px;font-weight:600;letter-spacing:-.03em;display:block}
+.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.actions button{flex:1 1 auto;min-width:120px;background:var(--carte);color:var(--encre);
+  border:1px solid var(--trait);border-radius:9px;padding:10px;font:inherit;font-weight:600;font-size:14px;cursor:pointer}
+.actions button.principal{background:var(--accent);border-color:var(--accent);color:#fff}
+.actions button.danger{color:var(--payer)}
+
+.bloc{background:var(--carte);border:1px solid var(--trait);border-radius:12px;padding:14px;margin-top:8px;
+  width:100%;text-align:left;font:inherit;color:inherit;display:block}
+button.bloc{cursor:pointer}
+.bloc .haut-bloc{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.bloc .objet{font-weight:600}
+.bloc .sous-bloc{font-size:13px;color:var(--encre-douce);margin:2px 0 0}
+.barre{height:7px;border-radius:7px;background:var(--carte2);margin:10px 0 4px;overflow:hidden}
+.barre i{display:block;height:100%;background:var(--accent)}
+.tranches{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.tranches li{display:flex;align-items:center;gap:10px}
+.tranches .date{font-family:var(--police-chiffre);font-size:13px;color:var(--encre-douce);min-width:78px}
+.tranches .montant{margin-left:auto}
+.note{background:var(--carte2);border-radius:10px;padding:12px;font-size:14px;margin-top:8px;color:var(--encre-douce)}
+.paire{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;font-size:13px}
+.paire div{background:var(--carte2);border-radius:8px;padding:8px 10px}
+.paire span{display:block;color:var(--encre-douce);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.paire b{font-family:var(--police-chiffre);font-variant-numeric:tabular-nums;font-size:15px}
+.alerte-texte{font-size:13px;color:var(--payer);margin:10px 0 0;font-weight:600}
+
+.cats{display:flex;flex-direction:column;gap:10px;margin-top:8px;background:var(--carte);
+  border:1px solid var(--trait);border-radius:12px;padding:14px}
+.cat{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:14px}
+.cat .lib{font-weight:600}
+.cat .val{font-family:var(--police-chiffre);font-variant-numeric:tabular-nums;font-weight:600}
+.cat .piste{grid-column:1/-1;height:6px;border-radius:6px;background:var(--carte2);overflow:hidden}
+.cat .piste i{display:block;height:100%;background:var(--accent)}
+.cat .pc{grid-column:1/-1;font-size:12px;color:var(--encre-douce)}
+
+.bilan{display:flex;flex-direction:column;gap:1px;background:var(--trait);border:1px solid var(--trait);
+  border-radius:12px;overflow:hidden;margin-top:8px}
+.bilan .l{background:var(--carte);padding:11px 14px;display:flex;gap:10px;align-items:baseline;
+  width:100%;border:0;font:inherit;color:inherit;text-align:left}
+button.l{cursor:pointer}
+.bilan .l span{flex:1;min-width:0}
+.bilan .l.total{background:var(--carte2);font-weight:700}
+.position{background:var(--accent);color:#fff;border-radius:12px;padding:16px;margin-top:12px}
+.position .etiquette{font-size:12px;text-transform:uppercase;letter-spacing:.07em;opacity:.85;font-weight:600}
+.position .gros{font-family:var(--police-chiffre);font-variant-numeric:tabular-nums;
+  font-size:30px;font-weight:600;display:block;letter-spacing:-.03em}
+
+/* Le résumé d'un écran : deux ou trois lignes, un libellé et un chiffre. */
+.resume{background:var(--carte);border:1px solid var(--trait);border-radius:12px;padding:2px 16px;margin-top:12px}
+.rang{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-top:1px solid var(--trait)}
+.resume > .rang:first-child,.resume > .rang-detail:first-child > summary{border-top:0}
+.rang .lib{font-size:15px;min-width:0}
+.rang .petit{display:block;font-size:13px;color:var(--encre-douce);margin-top:1px}
+.rang b{font-family:var(--police-chiffre);font-variant-numeric:tabular-nums;font-size:21px;font-weight:600;
+  letter-spacing:-.02em;white-space:nowrap}
+.rang b.plus{color:var(--recevoir)}
+.rang b.moins{color:var(--payer)}
+.rang.fin{padding:9px 0}
+.rang.fin b{font-size:16px}
+.rang-detail > summary{list-style:none;cursor:pointer}
+.rang-detail > summary::-webkit-details-marker{display:none}
+.rang-detail > summary .t::after{content:" ›";color:var(--encre-douce)}
+.rang-detail[open] > summary .t::after{content:" ⌄"}
+.r-corps{padding:0 0 10px;border-top:1px solid var(--trait)}
+.r-corps > .rang:first-child{border-top:0}
+.r-corps > .liste,.r-corps > .vide{margin-top:10px}
+.r-corps > .sous-bloc{font-size:13px;color:var(--encre-douce);margin:8px 0 0}
+.feuille .bloc{background:var(--fond)}
+
+/* Une rubrique repliée : titre, état en un mot, compteur. Le détail s'ouvre
+   au toucher. C'est elle qui tient la règle « l'essentiel d'abord ». */
+.section{background:var(--carte);border:1px solid var(--trait);border-radius:12px;margin-top:8px}
+.section > summary{list-style:none;display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;
+  font-weight:600;font-size:15px}
+.section > summary::-webkit-details-marker{display:none}
+.section > summary::after{content:"›";color:var(--encre-douce);font-size:20px;line-height:1;font-weight:400}
+.section[open] > summary::after{content:"⌄"}
+.section > summary:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:12px}
+.section .s-titre{flex:1;min-width:0}
+.section .s-resume{font-family:var(--police-chiffre);font-variant-numeric:tabular-nums;font-size:13px;
+  font-weight:500;color:var(--encre-douce);white-space:nowrap}
+.section .pastille{font-family:var(--police-chiffre);font-size:12px;font-weight:600;background:var(--carte2);
+  border-radius:20px;padding:1px 8px}
+.section.alerte > summary{color:var(--retard)}
+.section.alerte .pastille{background:var(--retard);color:#fff}
+.section .s-corps{padding:0 12px 12px}
+.section .s-corps > .sous-bloc{font-size:13px;color:var(--encre-douce);margin:10px 4px 0}
+.section .s-corps > .objet{font-weight:600;margin:0 4px}
+.section .s-entete{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--encre-douce);
+  font-weight:600;margin:12px 4px 0}
+
+/* Le bilan du mois : un tableau à deux colonnes de chiffres, rien de plus.
+   Chiffres alignés à droite et à largeur fixe, pour se comparer d'un regard. */
+.verdict{font-size:15px;font-weight:600;margin:4px 4px 10px;line-height:1.35}
+.verdict.moins{color:var(--payer)}
+.verdict.plus{color:var(--recevoir)}
+.prevu-fait{width:100%;border-collapse:collapse;background:var(--carte);border-radius:12px;overflow:hidden}
+.prevu-fait th{font-weight:400;text-align:left;padding:8px 0 8px 12px;font-size:14px}
+.prevu-fait td{text-align:right;padding:8px 12px 8px 6px;white-space:nowrap;font-size:13px;
+  font-family:var(--police-chiffre);font-variant-numeric:tabular-nums}
+.prevu-fait thead th{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--encre-douce);
+  text-align:right;padding:8px 12px 2px 6px}
+.prevu-fait .groupe th{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--encre-douce);
+  font-weight:600;padding-top:12px;padding-bottom:2px}
+.prevu-fait .total th,.prevu-fait .total td{font-weight:700;border-top:1px solid var(--trait);padding-top:11px;padding-bottom:11px}
+.prevu-fait td.moins{color:var(--payer)}
+.prevu-fait td.plus{color:var(--recevoir)}
+
+/* La jauge d'un total fixe du mois : pleine et verte quand tout est là. */
+.rang-detail > summary .lib{flex:1}
+.jauge{display:block;height:6px;border-radius:6px;background:var(--carte2);margin:6px 0 4px;overflow:hidden;max-width:220px}
+.jauge i{display:block;height:100%;background:var(--retard);border-radius:6px}
+.jauge.pleine i{background:var(--recevoir)}
+.mention{display:block;font-size:13px;color:var(--encre-douce)}
+.mention.ok{color:var(--recevoir);font-weight:600}
+
+/* Le tableau de bord de l'accueil : quatre tuiles, une par onglet. Un nom,
+   un chiffre, une précision — et toute la tuile mène à l'onglet. */
+.tuiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.tuile{background:var(--carte);border:1px solid var(--trait);border-radius:12px;padding:11px 12px;
+  font:inherit;color:inherit;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:3px;min-width:0}
+.tuile:hover{background:var(--carte2)}
+.tuile .t-nom{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--encre-douce);font-weight:600}
+.tuile b{font-family:var(--police-chiffre);font-variant-numeric:tabular-nums;font-size:17px;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.tuile b.plus{color:var(--recevoir)}
+.tuile b.moins{color:var(--payer)}
+.tuile .t-sous{font-size:12px;color:var(--encre-douce);line-height:1.3}
+.sous-titre{font-size:13px;color:var(--encre-douce);margin:-2px 0 8px}
+/* Dans une suggestion, le verbe est une étiquette : c'est la ligne entière qui se touche. */
+.suggestion .faire{display:flex;align-items:center;min-height:30px;padding:5px 11px}
+
+/* Le menu du bouton + : de grandes lignes, une par chose qu'on peut ajouter ici. */
+.menu .ligne{padding-top:14px;padding-bottom:14px}
+.menu .chevron{color:var(--encre-douce);font-size:20px;margin-left:8px}
+
+/* Une anomalie : une ligne rouge, tout en haut, qu'on touche pour corriger. */
+.alerte-ligne{display:block;width:100%;text-align:left;margin-top:12px;padding:12px 14px;border-radius:12px;
+  border:1px solid var(--payer);background:var(--carte);color:var(--payer);font:inherit;font-weight:600;cursor:pointer}
+.alerte-ligne .petit{display:block;font-weight:400;font-size:13px;color:var(--encre-douce);margin-top:2px}
+
+/* Feuille de saisie : elle monte du bas, le pouce y arrive. */
+/* L'écran de saisie. C'est LUI qui défile, pas la feuille qu'il contient :
+   un seul conteneur de défilement, plein écran — la seule construction que
+   Safari sur iPhone fait défiler sans caprice. Une feuille qui défile à
+   l'intérieur d'un voile fixe se bloque dès que le clavier la recouvre.
+   La feuille est posée en bas quand elle est courte (margin-top:auto) ; quand
+   elle est plus haute que l'écran, on la fait défiler d'un bout à l'autre.
+   L'app ajuste « top » et « height » à la zone visible au-dessus du clavier. */
+.voile{position:fixed;left:0;right:0;top:0;height:100%;background:rgba(0,0,0,.45);z-index:10;
+  display:flex;flex-direction:column;padding-top:44px;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.feuille{background:var(--carte);width:100%;max-width:560px;align-self:center;margin-top:auto;flex:none;
+  border-radius:16px 16px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px))}
+.feuille h3{font-size:18px;margin-bottom:4px}
+.feuille .intro{font-size:13px;color:var(--encre-douce);margin:0 0 8px}
+.champ{display:block;margin-top:12px;font-size:13px;font-weight:600;color:var(--encre-douce)}
+/* 16 px, pas moins : en dessous, Safari sur iPhone zoome tout seul dès qu'on
+   touche le champ, et laisse la page agrandie et décalée. L'étiquette reste
+   petite ; c'est le champ qui ne doit pas hériter de sa taille. */
+.champ input,.champ select,.champ textarea{width:100%;margin-top:4px;padding:11px;
+  font-family:inherit;font-size:16px;font-weight:400;line-height:1.3;
+  background:var(--fond);color:var(--encre);border:1px solid var(--trait);border-radius:9px}
+.champ textarea{min-height:64px;resize:vertical}
+.champ .aide{display:block;font-weight:400;font-size:12px;margin-top:3px}
+.champ.gros-montant input{font-family:var(--police-chiffre);font-size:24px;font-weight:600;text-align:right}
+.deux-champs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.choix{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.choix button{padding:10px;font:inherit;font-size:13.5px;font-weight:600;background:var(--fond);
+  color:var(--encre);border:1px solid var(--trait);border-radius:9px;cursor:pointer;text-align:left}
+.choix button small{display:block;font-weight:400;font-size:11.5px;color:var(--encre-douce);margin-top:2px}
+.choix button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:#fff}
+.choix button[aria-pressed="true"] small{color:rgba(255,255,255,.85)}
+.erreur{background:var(--payer);color:#fff;border-radius:9px;padding:10px;font-size:14px;
+  font-weight:600;margin-top:12px}
+.fin{display:flex;gap:8px;margin-top:16px}
+.fin button{flex:1;padding:13px;font:inherit;font-weight:600;border-radius:9px;cursor:pointer;
+  border:1px solid var(--trait);background:var(--fond);color:var(--encre)}
+.fin button.principal{background:var(--accent);border-color:var(--accent);color:#fff}
+.fin button.danger{background:var(--payer);border-color:var(--payer);color:#fff}
+.secret{width:100%;font-family:var(--police-chiffre);font-size:16px;min-height:120px;margin-top:8px;
+  padding:10px;background:var(--fond);color:var(--encre);border:1px solid var(--trait);border-radius:9px}
+
+/* Verrou : plein écran, rien d'autre à faire que d'entrer le code. */
+.verrou{position:fixed;inset:0;z-index:20;background:var(--fond);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:14px;padding:24px}
+.verrou h1{font-size:22px}
+.verrou input{font-family:var(--police-chiffre);font-size:28px;text-align:center;letter-spacing:.3em;
+  width:200px;padding:12px;background:var(--carte);color:var(--encre);border:1px solid var(--trait);border-radius:12px}
+.verrou p{color:var(--encre-douce);font-size:13px;text-align:center;max-width:280px;margin:0}
+.verrou .bouton-verrou{width:240px;padding:14px;font:inherit;font-weight:600;border-radius:12px;cursor:pointer;
+  border:1px solid var(--accent);background:var(--accent);color:#fff}
+.verrou .bouton-verrou.second{background:var(--carte);color:var(--encre);border-color:var(--trait)}
+.verrou .bouton-verrou:focus-visible{outline:2px solid var(--encre);outline-offset:2px}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(140px + env(safe-area-inset-bottom,0px));
+  z-index:30;background:var(--encre);color:var(--fond);padding:10px 16px;border-radius:24px;
+  font-size:14px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.25);max-width:90%;text-align:center}
+.toast.avec-bouton{display:flex;align-items:center;gap:14px;padding:8px 8px 8px 18px}
+.toast.avec-bouton button{font:inherit;font-weight:700;background:var(--fond);color:var(--encre);border:0;
+  border-radius:20px;padding:9px 16px;min-height:40px;cursor:pointer}
+@media (prefers-reduced-motion:no-preference){
+  .toast{animation:monte .18s ease-out}
+  @keyframes monte{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
+}
+
+/* ===================================================== grand écran (Mac)
+   Le téléphone reste la référence ; ceci ne s'applique qu'à partir de 900 px.
+   Une colonne de téléphone au milieu d'un écran de Mac gâche les trois quarts
+   de la place : la navigation passe à gauche, le bouton « noter » avec elle,
+   les chiffres clés tiennent une colonne et les rubriques l'autre, et les
+   feuilles de saisie s'ouvrent au centre plutôt que collées en bas. */
+@media (min-width:900px){
+  body{padding-left:248px}
+  .onglets{top:0;bottom:0;left:0;right:auto;width:248px;flex-direction:column;justify-content:flex-start;gap:2px;
+    padding:132px 14px 16px;border-top:0;border-right:1px solid var(--trait)}
+  .onglets button{flex:none;flex-direction:row;justify-content:flex-start;gap:12px;width:100%;
+    font-size:15px;padding:11px 12px;border-radius:9px}
+  .onglets button b{font-size:16px;width:20px;text-align:center}
+  .onglets button:hover,.onglets button[aria-current="page"]{background:var(--carte2)}
+  .plus-rond{left:14px;right:auto;top:68px;bottom:auto;width:220px;height:46px;border-radius:10px;
+    font-size:20px;box-shadow:none}
+  .plus-rond::after{content:"  Noter";font-size:15px;font-weight:600;vertical-align:2px}
+  /* Le nom de l'app est dans l'en-tête, mais s'affiche en haut de la barre
+     latérale : l'en-tête doit donc passer au-dessus d'elle. */
+  .haut{padding:18px 40px 10px;border-bottom:0;z-index:8}
+  .haut b{position:fixed;left:24px;top:22px;font-size:19px}
+  .haut .jour{margin-left:0;margin-right:auto;font-size:14px}
+  .ecran{max-width:1080px;margin:0;padding:0 40px 56px}
+  .ecran > *:not(.colonnes){max-width:720px}
+  .colonnes{display:flex;gap:28px;align-items:flex-start}
+  .col-tete{flex:0 0 360px;position:sticky;top:64px}
+  .col-corps{flex:1;min-width:0}
+  .col-corps > .section:first-child{margin-top:12px}
+  .voile{padding:24px}
+  .feuille{margin:auto;border-radius:16px;max-width:560px;padding-bottom:18px}
+  .toast{bottom:32px}
+}
